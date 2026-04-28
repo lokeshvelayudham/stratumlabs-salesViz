@@ -423,7 +423,7 @@ export default function Home() {
           <div className="md:col-span-1">
             <Link href="/" className="inline-flex items-center mb-6 text-xl font-bold text-white tracking-tight">
               <div className="w-5 h-5 rounded-full flex items-center justify-center mr-2 overflow-hidden border border-[#59abe7]/30 shrink-0">
-                <Image src="/icon.png" alt="Stratum Labs" width={20} height={20} className="object-cover" />
+                <Image src="/Stratum_Labs.png" alt="Stratum Labs" width={20} height={20} className="object-contain" />
               </div>
               Stratum <span className="text-[#5ab5e7]">Labs</span>
             </Link>

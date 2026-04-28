@@ -9,7 +9,7 @@ export function LandingNavbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center group">
           <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3 overflow-hidden border border-[#59abe7]/30">
-            <Image src="/icon.png" alt="Stratum Labs" width={32} height={32} className="object-cover" />
+            <Image src="/Stratum_Labs.png" alt="Stratum Labs" width={32} height={32} className="object-contain" />
           </div>
           <span className="text-lg font-bold text-white tracking-tight">
             Stratum <span className="text-[#5ab5e7]">Labs</span>

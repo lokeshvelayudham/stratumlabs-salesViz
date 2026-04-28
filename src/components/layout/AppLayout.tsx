@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -18,6 +18,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { signoutAction } from "@/app/(auth)/actions";
 
+type SidebarUser = {
+  name: string;
+  email: string;
+  image: string | null;
+  initials: string;
+  planName: string;
+  planDetail: string;
+};
+
 const NAVIGATION = [
   { name: "Dashboard", href: "/dashboard", icon: BarChart3 },
   { name: "Leads", href: "/leads", icon: Users },
@@ -28,11 +37,50 @@ const NAVIGATION = [
   { name: "Activity", href: "/activity", icon: Activity },
 ];
 
+const PUBLIC_ROUTES = new Set(["/", "/login", "/signup", "/products", "/company", "/legal"]);
+
+const FALLBACK_USER: SidebarUser = {
+  name: "Admin User",
+  email: "Authenticated workspace",
+  image: null,
+  initials: "A",
+  planName: "Core Workspace",
+  planDetail: "Connected access",
+};
+
 export function AppLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const [currentUser, setCurrentUser] = useState<SidebarUser>(FALLBACK_USER);
+  const isPublicRoute = PUBLIC_ROUTES.has(pathname);
+
+  useEffect(() => {
+    if (isPublicRoute) return;
+
+    let ignore = false;
+
+    const loadCurrentUser = async () => {
+      try {
+        const response = await fetch("/api/session-user", { cache: "no-store" });
+        if (!response.ok) return;
+
+        const user = (await response.json()) as SidebarUser | null;
+        if (!ignore && user) {
+          setCurrentUser(user);
+        }
+      } catch {
+        // Leave the shell fallback in place if user hydration fails.
+      }
+    };
+
+    void loadCurrentUser();
+
+    return () => {
+      ignore = true;
+    };
+  }, [isPublicRoute, pathname]);
 
   // If it's a landing/marketing page, don't show the app layout
-  if (["/", "/login", "/signup", "/products", "/company", "/legal"].includes(pathname)) {
+  if (isPublicRoute) {
     return <>{children}</>;
   }
 
@@ -46,7 +94,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <aside className="hidden md:flex w-64 bg-[#081125]/78 backdrop-blur-xl border-r border-white/5 flex-col fixed h-full z-20">
         <div className="h-16 flex items-center px-6 border-b border-white/5">
           <div className="w-6 h-6 rounded-full flex items-center justify-center mr-2 overflow-hidden border border-[#59abe7]/35 shrink-0">
-            <Image src="/icon.png" alt="Stratum Labs" width={24} height={24} className="object-cover" />
+            <Image src="/Stratum_Labs.png" alt="Stratum Labs" width={24} height={24} className="object-contain" />
           </div>
           <span className="text-lg font-bold text-slate-50 tracking-tight">Stratum Labs</span>
         </div>
@@ -77,7 +125,27 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </nav>
         </div>
 
-        <div className="p-4 border-t border-white/5">
+        <div className="p-4 border-t border-white/5 space-y-3">
+          <div className="rounded-2xl border border-[#59abe7]/18 bg-[#5663e8]/10 px-3 py-3 shadow-[0_0_24px_rgba(86,99,232,0.12)]">
+            <div className="flex items-start gap-3">
+              <Avatar className="h-10 w-10 shrink-0 border border-[#59abe7]/40">
+                <AvatarImage src={currentUser.image ?? ""} />
+                <AvatarFallback className="bg-slate-900 text-[#5ab5e7] font-mono text-xs">
+                  {currentUser.initials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-semibold text-slate-100 truncate">{currentUser.name}</div>
+                <div className="text-xs text-slate-400 truncate">{currentUser.email}</div>
+                <div className="mt-2 inline-flex items-center rounded-full border border-[#59abe7]/25 bg-[#081125]/80 px-2.5 py-1 text-[10px] font-mono uppercase tracking-widest text-[#5ab5e7]">
+                  {currentUser.planName}
+                </div>
+                <div className="mt-1 text-[10px] font-mono uppercase tracking-widest text-slate-500 truncate">
+                  {currentUser.planDetail}
+                </div>
+              </div>
+            </div>
+          </div>
           <form action={signoutAction}>
             <button
               type="submit"
@@ -96,7 +164,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         <header className="h-16 bg-[#081125]/76 backdrop-blur-md flex items-center justify-between px-6 border-b border-white/5 sticky top-0 z-30">
           <div className="flex items-center md:hidden">
             <div className="w-6 h-6 rounded-full flex items-center justify-center mr-2 overflow-hidden border border-[#59abe7]/35 shrink-0">
-              <Image src="/icon.png" alt="Stratum Labs" width={24} height={24} className="object-cover" />
+              <Image src="/Stratum_Labs.png" alt="Stratum Labs" width={24} height={24} className="object-contain" />
             </div>
             <span className="text-lg font-bold">Stratum Labs</span>
           </div>
@@ -106,12 +174,20 @@ export function AppLayout({ children }: { children: ReactNode }) {
               sys.status: online
             </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="text-xs font-mono font-medium text-slate-400 hidden sm:block">Admin_User</div>
-            <Avatar className="h-8 w-8 cursor-pointer border border-[#59abe7]/40 ring-2 ring-transparent hover:ring-[#59abe7]/20 transition-all">
-              <AvatarImage src="" />
-              <AvatarFallback className="bg-slate-800 text-[#5ab5e7] font-mono text-xs">A</AvatarFallback>
-            </Avatar>
+          <div className="flex items-center gap-3">
+            <div className="md:hidden flex items-center gap-2 max-w-40">
+              <Avatar className="h-8 w-8 border border-[#59abe7]/40">
+                <AvatarImage src={currentUser.image ?? ""} />
+                <AvatarFallback className="bg-slate-800 text-[#5ab5e7] font-mono text-xs">
+                  {currentUser.initials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0">
+                <div className="text-xs font-medium text-slate-100 truncate">{currentUser.name}</div>
+                <div className="text-[10px] font-mono uppercase tracking-widest text-[#59abe7]/75 truncate">{currentUser.planName}</div>
+              </div>
+            </div>
+            <ThemeToggle />
           </div>
         </header>
 

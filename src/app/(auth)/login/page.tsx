@@ -31,7 +31,7 @@ export default function LoginPage() {
       <div className="mb-8 relative z-10 flex flex-col items-center">
         <Link href="/" className="flex justify-center group mb-4">
           <div className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden border border-[#59abe7]/30 shadow-[0_0_15px_rgba(86,99,232,0.16)]">
-            <Image src="/icon.png" alt="Stratum Labs" width={48} height={48} className="object-cover transition-transform group-hover:scale-110" />
+            <Image src="/Stratum_Labs.png" alt="Stratum Labs" width={48} height={48} className="object-contain transition-transform group-hover:scale-110" />
           </div>
         </Link>
         <h2 className="text-center text-3xl font-extrabold text-white tracking-tight">
