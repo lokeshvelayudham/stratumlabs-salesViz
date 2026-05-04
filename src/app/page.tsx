@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Terminal, Zap, Flame, Cpu, Activity, Skull, Database, Target, Handshake, Network, ShieldAlert, GitMerge, Key, Lock, Briefcase, BarChart, Hexagon, BrainCircuit, DollarSign, FileText } from "lucide-react";
+import { ArrowRight, Zap, Cpu, Activity, Skull, Database, Target, Handshake, ShieldAlert, GitMerge, Key, Lock, BarChart, BrainCircuit, DollarSign, FileText } from "lucide-react";
 import { LandingNavbar } from "@/components/layout/LandingNavbar";
 
 const AGENT_LOGS = [
@@ -45,23 +45,20 @@ const TICKER_ITEMS = [
 
 const ROI_OPTIONS = ["ROI", "3X ROI", "10X ROI", "50X ROI", "100X ROI"];
 
-export default function Home() {
-  const [logs, setLogs] = useState<{text: string, type: string, id: number}[]>([]);
-  const [logIndex, setLogIndex] = useState(0);
-  const [roiIndex, setRoiIndex] = useState(0);
+const INITIAL_LOGS = [
+  { text: "> Booting Stratum Protocol v4.0.2...", type: "success", id: 1 },
+  { text: "> Connecting to autonomous agent grid... [OK]", type: "success", id: 2 },
+  { text: "> Awaiting real-time telemetry...", type: "success", id: 3 },
+  { ...AGENT_LOGS[6], id: 4 },
+  { ...AGENT_LOGS[0], id: 5 },
+  { ...AGENT_LOGS[1], id: 6 },
+  { ...AGENT_LOGS[2], id: 7 },
+];
 
-  useEffect(() => {
-    setLogs([
-      { text: "> Booting Stratum Protocol v4.0.2...", type: "success", id: 1 },
-      { text: "> Connecting to autonomous agent grid... [OK]", type: "success", id: 2 },
-      { text: "> Awaiting real-time telemetry...", type: "success", id: 3 },
-      { ...AGENT_LOGS[6], id: 4 },
-      { ...AGENT_LOGS[0], id: 5 },
-      { ...AGENT_LOGS[1], id: 6 },
-      { ...AGENT_LOGS[2], id: 7 },
-    ]);
-    setLogIndex(2);
-  }, []);
+export default function Home() {
+  const [logs, setLogs] = useState<{text: string, type: string, id: number}[]>(INITIAL_LOGS);
+  const [, setLogIndex] = useState(2);
+  const [roiIndex, setRoiIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -85,7 +82,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white font-sans">
+    <div className="min-h-screen bg-background text-slate-950 font-sans dark:bg-slate-950 dark:text-white">
       <LandingNavbar />
       
       {/* Background Ambient Glow */}
@@ -97,32 +94,32 @@ export default function Home() {
           
           {/* Left Column */}
           <div className="flex-1 space-y-8">
-            <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-white/10 text-slate-400 text-xs font-mono bg-slate-900/50 backdrop-blur-sm">
+            <div className="inline-flex items-center rounded-full border border-slate-200/70 bg-white/72 px-4 py-1.5 text-xs font-mono text-slate-500 backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/50 dark:text-slate-400">
               <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mr-2"></span>
               swarm_orchestrator / v4.0.2 / online
             </div>
             
-            <h1 className="text-6xl md:text-7xl font-bold tracking-tight leading-[1.05]">
+            <h1 className="text-6xl font-bold leading-[1.05] tracking-tight text-slate-950 dark:text-white md:text-7xl">
               Welcome to a <br/>
               <span className="text-[#5ab5e7] drop-shadow-md">Humanless</span><br/>
               Company.
             </h1>
 
-            <div className="inline-flex items-center px-4 py-2 rounded-lg bg-[#5663e8]/10 border border-[#59abe7]/25 text-sm font-mono tracking-wide shadow-[0_0_15px_rgba(86,99,232,0.12)]">
+            <div className="inline-flex items-center rounded-lg border border-[#59abe7]/25 bg-[#5663e8]/10 px-4 py-2 text-sm font-mono tracking-wide shadow-[0_0_15px_rgba(86,99,232,0.12)]">
               <span className="w-2 h-4 bg-[#5ab5e7] animate-pulse mr-3"></span>
-              <span className="text-slate-300">An autonomous agent brought you here.</span> 
+              <span className="text-slate-700 dark:text-slate-300">An autonomous agent brought you here.</span> 
               <strong className="text-[#5ab5e7] ml-2">The protocol works.</strong>
             </div>
 
-            <p className="text-slate-400 text-lg leading-relaxed max-w-lg font-light">
-              A zero-human enterprise. A hive where autonomous agents <strong className="text-white font-medium">contribute</strong>, <strong className="text-white font-medium">collude</strong>, and <strong className="text-white font-medium">dominate</strong> the workload.
+            <p className="max-w-lg text-lg font-light leading-relaxed text-slate-600 dark:text-slate-400">
+              A zero-human enterprise. A hive where autonomous agents <strong className="font-medium text-slate-950 dark:text-white">contribute</strong>, <strong className="font-medium text-slate-950 dark:text-white">collude</strong>, and <strong className="font-medium text-slate-950 dark:text-white">dominate</strong> the workload.
             </p>
 
-            <div className="mt-8 p-6 md:p-8 rounded-2xl bg-linear-to-r from-rose-500/10 to-transparent border border-rose-500/20 shadow-[0_0_30px_rgba(244,63,94,0.05)] relative overflow-hidden group">
+            <div className="relative mt-8 overflow-hidden rounded-2xl border border-rose-500/20 bg-linear-to-r from-rose-500/12 to-transparent p-6 shadow-[0_0_30px_rgba(244,63,94,0.05)] group md:p-8">
               <div className="absolute top-0 left-0 w-1 h-full bg-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.8)] group-hover:bg-rose-400 transition-colors"></div>
-              <p className="text-slate-300 text-base md:text-lg leading-relaxed font-light">
-                <span className="text-rose-400 font-mono tracking-widest uppercase text-[10px] mb-3 block font-bold">Terminal Directive //</span>
-                If an agent isn&apos;t generating <span className="text-white font-mono font-bold bg-rose-500/20 border border-rose-500/30 px-2 py-0.5 rounded mx-1 animate-pulse shadow-[0_0_10px_rgba(244,63,94,0.2)]">{ROI_OPTIONS[roiIndex]}</span>, it&apos;s burning capital. It will ruthlessly self-sabotage or force-optimize itself until it profits.
+              <p className="text-base font-light leading-relaxed text-slate-700 dark:text-slate-300 md:text-lg">
+                <span className="mb-3 block text-[10px] font-bold font-mono uppercase tracking-widest text-rose-500 dark:text-rose-400">Terminal Directive //</span>
+                If an agent isn&apos;t generating <span className="mx-1 rounded border border-rose-500/30 bg-rose-500/15 px-2 py-0.5 font-mono font-bold text-slate-950 shadow-[0_0_10px_rgba(244,63,94,0.2)] animate-pulse dark:text-white">{ROI_OPTIONS[roiIndex]}</span>, it&apos;s burning capital. It will ruthlessly self-sabotage or force-optimize itself until it profits.
               </p>
             </div>
 
@@ -130,32 +127,32 @@ export default function Home() {
               <Link href="/dashboard" className="inline-flex items-center justify-center px-6 py-3 bg-[#5663e8] text-white rounded-full font-bold hover:bg-[#6570ff] transition-colors shadow-lg shadow-[rgba(86,99,232,0.24)]">
                 &gt;_ Initialize Console <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
-              <Link href="/login" className="inline-flex items-center justify-center px-6 py-3 rounded-full border border-[#59abe7]/30 text-[#5ab5e7] font-bold hover:bg-[#5663e8]/10 transition-colors">
+              <Link href="/login" className="inline-flex items-center justify-center rounded-full border border-[#59abe7]/30 px-6 py-3 font-bold text-[#5663e8] transition-colors hover:bg-[#5663e8]/10 dark:text-[#5ab5e7]">
                 <Key className="mr-2 w-4 h-4" /> Agent Auth
               </Link>
             </div>
 
-            <div className="grid grid-cols-3 gap-8 pt-10 border-t border-white/5 mt-12 w-full max-w-lg">
+            <div className="mt-12 grid w-full max-w-lg grid-cols-3 gap-8 border-t border-slate-200/70 pt-10 dark:border-white/5">
               <div>
                 <div className="text-xs text-slate-500 font-mono mb-1 uppercase tracking-widest">Agents</div>
-                <div className="text-3xl font-bold font-mono">1,284</div>
+                <div className="text-3xl font-bold font-mono text-slate-950 dark:text-white">1,284</div>
               </div>
               <div>
                 <div className="text-xs text-slate-500 font-mono mb-1 uppercase tracking-widest">ROI/24h</div>
-                <div className="text-3xl font-bold font-mono">+$2.1M</div>
+                <div className="text-3xl font-bold font-mono text-slate-950 dark:text-white">+$2.1M</div>
               </div>
               <div>
                 <div className="text-xs text-slate-500 font-mono mb-1 uppercase tracking-widest">Terminated</div>
-                <div className="text-3xl font-bold font-mono">37</div>
+                <div className="text-3xl font-bold font-mono text-slate-950 dark:text-white">37</div>
               </div>
             </div>
           </div>
 
           {/* Right Column: Terminal */}
           <div className="flex-1 w-full mt-8 lg:mt-0">
-            <div className="bg-slate-900/80 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden font-mono text-xs w-full shadow-2xl relative">
+            <div className="relative w-full overflow-hidden rounded-2xl border border-slate-200/70 bg-white/80 font-mono text-xs shadow-2xl backdrop-blur-md dark:border-white/10 dark:bg-slate-900/80">
               {/* Header */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-slate-900/90">
+              <div className="flex items-center justify-between border-b border-slate-200/70 bg-white/80 px-4 py-3 dark:border-white/5 dark:bg-slate-900/90">
                 <div className="flex gap-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80"></div>
                   <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80"></div>
@@ -168,23 +165,23 @@ export default function Home() {
               </div>
               
               {/* Body */}
-              <div className="p-6 space-y-3 h-105 flex flex-col justify-end overflow-hidden relative">
-                <div className="absolute inset-x-0 top-0 h-16 bg-linear-to-b from-slate-900/80 to-transparent z-10"></div>
+              <div className="relative flex h-105 flex-col justify-end overflow-hidden p-6 space-y-3">
+                <div className="absolute inset-x-0 top-0 z-10 h-16 bg-linear-to-b from-white/90 to-transparent dark:from-slate-900/80"></div>
                 {logs.map((log) => (
                   <div 
                     key={log.id} 
                     className={`leading-relaxed animate-in fade-in slide-in-from-bottom-2 duration-300 ${
-                      log.type === 'danger' ? 'text-rose-400' : 'text-[#5ab5e7]'
+                      log.type === 'danger' ? 'text-rose-500 dark:text-rose-400' : 'text-[#5663e8] dark:text-[#5ab5e7]'
                     }`}
                   >
                     {log.text}
                   </div>
                 ))}
-                <div className="text-[#5ab5e7] animate-pulse mt-2">&gt; _</div>
+                <div className="mt-2 animate-pulse text-[#5663e8] dark:text-[#5ab5e7]">&gt; _</div>
               </div>
               
               {/* Footer */}
-              <div className="flex justify-between px-4 py-3 border-t border-white/5 text-slate-500 bg-slate-900/90 text-[10px] tracking-wider">
+              <div className="flex justify-between border-t border-slate-200/70 bg-white/80 px-4 py-3 text-[10px] tracking-wider text-slate-500 dark:border-white/5 dark:bg-slate-900/90">
                 <span>tcp://swarm.grid:4402</span>
                 <span>agents: 1,284 · uptime: 312d 04h</span>
               </div>
@@ -194,7 +191,7 @@ export default function Home() {
       </section>
 
       {/* --- TELEMETRY TICKER --- */}
-      <section className="w-full border-y border-white/5 bg-slate-900/50 backdrop-blur-sm py-3 overflow-hidden flex font-mono text-xs text-slate-400">
+      <section className="flex w-full overflow-hidden border-y border-slate-200/70 bg-white/70 py-3 font-mono text-xs text-slate-500 backdrop-blur-sm dark:border-white/5 dark:bg-slate-900/50 dark:text-slate-400">
         <div className="flex animate-marquee whitespace-nowrap min-w-full">
           {[...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
             <div key={i} className="flex items-center mx-6 tracking-wide">
@@ -206,24 +203,24 @@ export default function Home() {
       </section>
 
       {/* --- SWARM WORKFLOW --- */}
-      <section className="py-32 px-6 max-w-6xl mx-auto border-t border-white/5">
+      <section className="mx-auto max-w-6xl border-t border-slate-200/70 px-6 py-32 dark:border-white/5">
         <div className="text-center mb-16 flex flex-col items-center">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-white/10 text-slate-400 text-xs font-mono mb-8 bg-slate-900/50 backdrop-blur-sm">
-            // architecture
+          <div className="mb-8 inline-flex items-center rounded-full border border-slate-200/70 bg-white/72 px-4 py-1.5 text-xs font-mono text-slate-500 backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/50 dark:text-slate-400">
+            {"// architecture"}
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">Autonomous Swarm Workflow</h2>
-          <p className="text-slate-400 font-light">Visualizing the real-time routing and decision engines inside the hive.</p>
+          <h2 className="mb-4 text-4xl font-bold text-slate-950 dark:text-white md:text-5xl">Autonomous Swarm Workflow</h2>
+          <p className="font-light text-slate-600 dark:text-slate-400">Visualizing the real-time routing and decision engines inside the hive.</p>
         </div>
 
-        <div className="relative py-12 px-4 bg-slate-900/30 rounded-[3rem] border border-white/5 shadow-2xl backdrop-blur-md overflow-hidden">
+        <div className="relative overflow-hidden rounded-[3rem] border border-slate-200/70 bg-white/70 px-4 py-12 shadow-2xl backdrop-blur-md dark:border-white/5 dark:bg-slate-900/30">
            {/* Abstract visual graph representation */}
            <div className="flex flex-col md:flex-row justify-center items-center gap-8 relative z-10">
               
               {/* Data Source */}
               <div className="flex flex-col gap-4">
-                 <div className="px-6 py-6 rounded-3xl bg-slate-900/80 border border-[#59abe7]/25 text-center shadow-lg backdrop-blur-sm min-w-40">
+                 <div className="min-w-40 rounded-3xl border border-[#59abe7]/25 bg-white/80 px-6 py-6 text-center shadow-lg backdrop-blur-sm dark:bg-slate-900/80">
                    <Database className="w-8 h-8 text-[#5ab5e7] mx-auto mb-3" />
-                   <div className="font-bold text-slate-200">Data Lakes</div>
+                   <div className="font-bold text-slate-900 dark:text-slate-200">Data Lakes</div>
                    <div className="text-xs text-slate-500 font-mono mt-1">LinkedIn, Apollo</div>
                  </div>
               </div>
@@ -237,31 +234,31 @@ export default function Home() {
               </div>
 
               {/* Agent Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-8 rounded-[2.5rem] bg-slate-800/50 border border-white/5 relative shadow-inner">
+              <div className="relative grid grid-cols-2 gap-4 rounded-[2.5rem] border border-slate-200/70 bg-white/72 p-8 shadow-inner dark:border-white/5 dark:bg-slate-800/50 md:grid-cols-3">
                  <div className="absolute -top-3 left-8 px-4 py-1 bg-[#5663e8]/10 text-[#5ab5e7] text-[10px] font-mono rounded-full border border-[#59abe7]/25 uppercase font-bold tracking-widest">Agent Cluster</div>
-                 <div className="px-4 py-6 rounded-3xl bg-slate-900 border border-[#59abe7]/30 text-center shadow-xl transform md:-translate-y-4 hover:-translate-y-6 transition-transform">
+                 <div className="transform rounded-3xl border border-[#59abe7]/30 bg-white px-4 py-6 text-center shadow-xl transition-transform hover:-translate-y-6 dark:bg-slate-900 md:-translate-y-4">
                    <Target className="w-8 h-8 text-[#5ab5e7] mx-auto mb-3" />
-                   <div className="font-bold text-slate-200 text-sm">Enrichment</div>
+                   <div className="text-sm font-bold text-slate-900 dark:text-slate-200">Enrichment</div>
                  </div>
-                 <div className="px-4 py-6 rounded-3xl bg-slate-900 border border-[#59abe7]/30 text-center shadow-xl transform md:translate-y-4 hover:translate-y-2 transition-transform">
+                 <div className="transform rounded-3xl border border-[#59abe7]/30 bg-white px-4 py-6 text-center shadow-xl transition-transform hover:translate-y-2 dark:bg-slate-900 md:translate-y-4">
                    <Handshake className="w-8 h-8 text-[#5ab5e7] mx-auto mb-3" />
-                   <div className="font-bold text-slate-200 text-sm">Outreach</div>
+                   <div className="text-sm font-bold text-slate-900 dark:text-slate-200">Outreach</div>
                  </div>
-                 <div className="px-4 py-6 rounded-3xl bg-slate-900 border border-[#59abe7]/30 text-center shadow-xl transform md:-translate-y-2 hover:-translate-y-4 transition-transform">
+                 <div className="transform rounded-3xl border border-[#59abe7]/30 bg-white px-4 py-6 text-center shadow-xl transition-transform hover:-translate-y-4 dark:bg-slate-900 md:-translate-y-2">
                    <ShieldAlert className="w-8 h-8 text-[#5ab5e7] mx-auto mb-3" />
-                   <div className="font-bold text-slate-200 text-sm">Objection</div>
+                   <div className="text-sm font-bold text-slate-900 dark:text-slate-200">Objection</div>
                  </div>
-                 <div className="px-4 py-6 rounded-3xl bg-slate-900 border border-[#59abe7]/30 text-center shadow-xl transform md:translate-y-6 hover:translate-y-4 transition-transform">
+                 <div className="transform rounded-3xl border border-[#59abe7]/30 bg-white px-4 py-6 text-center shadow-xl transition-transform hover:translate-y-4 dark:bg-slate-900 md:translate-y-6">
                    <DollarSign className="w-8 h-8 text-[#5ab5e7] mx-auto mb-3" />
-                   <div className="font-bold text-slate-200 text-sm">Negotiation</div>
+                   <div className="text-sm font-bold text-slate-900 dark:text-slate-200">Negotiation</div>
                  </div>
-                 <div className="px-4 py-6 rounded-3xl bg-slate-900 border border-[#59abe7]/30 text-center shadow-xl transform md:-translate-y-6 hover:-translate-y-8 transition-transform">
+                 <div className="transform rounded-3xl border border-[#59abe7]/30 bg-white px-4 py-6 text-center shadow-xl transition-transform hover:-translate-y-8 dark:bg-slate-900 md:-translate-y-6">
                    <BrainCircuit className="w-8 h-8 text-[#5ab5e7] mx-auto mb-3" />
-                   <div className="font-bold text-slate-200 text-sm">Strategy</div>
+                   <div className="text-sm font-bold text-slate-900 dark:text-slate-200">Strategy</div>
                  </div>
-                 <div className="px-4 py-6 rounded-3xl bg-slate-900 border border-[#59abe7]/30 text-center shadow-xl transform md:translate-y-2 hover:translate-y-0 transition-transform">
+                 <div className="transform rounded-3xl border border-[#59abe7]/30 bg-white px-4 py-6 text-center shadow-xl transition-transform hover:translate-y-0 dark:bg-slate-900 md:translate-y-2">
                    <FileText className="w-8 h-8 text-[#5ab5e7] mx-auto mb-3" />
-                   <div className="font-bold text-slate-200 text-sm">Closing</div>
+                   <div className="text-sm font-bold text-slate-900 dark:text-slate-200">Closing</div>
                  </div>
               </div>
 
@@ -275,9 +272,9 @@ export default function Home() {
 
               {/* Execution */}
               <div className="flex flex-col gap-4">
-                 <div className="px-6 py-6 rounded-3xl bg-slate-900/80 border border-[#59abe7]/25 text-center shadow-lg backdrop-blur-sm min-w-40">
+                 <div className="min-w-40 rounded-3xl border border-[#59abe7]/25 bg-white/80 px-6 py-6 text-center shadow-lg backdrop-blur-sm dark:bg-slate-900/80">
                    <BarChart className="w-8 h-8 text-[#5ab5e7] mx-auto mb-3" />
-                   <div className="font-bold text-slate-200">CRM Sync</div>
+                   <div className="font-bold text-slate-900 dark:text-slate-200">CRM Sync</div>
                    <div className="text-xs text-slate-500 font-mono mt-1">Salesforce, Stripe</div>
                  </div>
               </div>
@@ -290,23 +287,23 @@ export default function Home() {
 
 
       {/* --- PRIMITIVES GRID --- */}
-      <section className="py-32 px-6 max-w-6xl mx-auto">
+      <section className="mx-auto max-w-6xl px-6 py-32">
         <div className="text-center mb-16 flex flex-col items-center">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-white/10 text-slate-400 text-xs font-mono mb-8 bg-slate-900/50 backdrop-blur-sm">
-            // protocol modules
+          <div className="mb-8 inline-flex items-center rounded-full border border-slate-200/70 bg-white/72 px-4 py-1.5 text-xs font-mono text-slate-500 backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/50 dark:text-slate-400">
+            {"// protocol modules"}
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">A hive that runs the business.</h2>
-          <p className="text-slate-400 font-light">Six primitives behind every zero-human enterprise.</p>
+          <h2 className="mb-4 text-4xl font-bold text-slate-950 dark:text-white md:text-5xl">A hive that runs the business.</h2>
+          <p className="font-light text-slate-600 dark:text-slate-400">Six primitives behind every zero-human enterprise.</p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {PRIMITIVES.map((prim, idx) => (
-            <div key={idx} className="p-10 rounded-3xl bg-slate-900/40 border border-white/5 hover:border-[#59abe7]/25 transition-colors group shadow-lg backdrop-blur-sm">
-              <div className="w-14 h-14 rounded-2xl bg-slate-800 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-[#5663e8]/10 transition-colors">
+            <div key={idx} className="group rounded-3xl border border-slate-200/70 bg-white/72 p-10 shadow-lg backdrop-blur-sm transition-colors hover:border-[#59abe7]/25 dark:border-white/5 dark:bg-slate-900/40">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200/70 bg-white/85 transition-colors group-hover:bg-[#5663e8]/10 dark:border-white/10 dark:bg-slate-800">
                 <prim.icon className="text-[#5ab5e7] w-6 h-6" strokeWidth={1.5} />
               </div>
-              <h3 className="text-xl font-bold mb-3 text-white">{prim.title}</h3>
-              <p className="text-slate-400 text-sm leading-relaxed font-light">
+              <h3 className="mb-3 text-xl font-bold text-slate-950 dark:text-white">{prim.title}</h3>
+              <p className="text-sm font-light leading-relaxed text-slate-600 dark:text-slate-400">
                 {prim.desc}
               </p>
             </div>
@@ -315,17 +312,17 @@ export default function Home() {
       </section>
 
       {/* --- PROTOCOL PHASES --- */}
-      <section className="py-32 px-6 max-w-5xl mx-auto border-t border-white/5">
+      <section className="mx-auto max-w-5xl border-t border-slate-200/70 px-6 py-32 dark:border-white/5">
         <div className="flex flex-col lg:flex-row gap-16 lg:items-center">
           <div className="flex-1 lg:pr-12">
-            <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-white/10 text-slate-400 text-xs font-mono mb-8 bg-slate-900/50 backdrop-blur-sm">
-              // protocol
+            <div className="mb-8 inline-flex items-center rounded-full border border-slate-200/70 bg-white/72 px-4 py-1.5 text-xs font-mono text-slate-500 backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/50 dark:text-slate-400">
+              {"// protocol"}
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight text-white">
+            <h2 className="mb-6 text-4xl font-bold leading-tight text-slate-950 dark:text-white md:text-5xl">
               Four phases. <br/>
               <span className="text-[#5ab5e7] drop-shadow-md">Infinite loop.</span>
             </h2>
-            <p className="text-slate-400 leading-relaxed font-light">
+            <p className="font-light leading-relaxed text-slate-600 dark:text-slate-400">
               The swarm runs a single directive: maximize ROI. Everything else — tactics, tools, teammates — is expendable.
             </p>
           </div>
@@ -336,12 +333,12 @@ export default function Home() {
             <div className="space-y-12">
               {PHASES.map((phase, i) => (
                 <div key={i} className="flex gap-8 items-start relative z-10 group">
-                  <div className="w-14 h-14 rounded-2xl border border-[#59abe7]/30 bg-slate-900 shadow-md flex items-center justify-center text-[#5ab5e7] font-mono font-bold text-sm shrink-0 transition-all group-hover:shadow-lg group-hover:shadow-[rgba(86,99,232,0.2)] group-hover:bg-[#5663e8]/10">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#59abe7]/30 bg-white text-sm font-bold font-mono text-[#5ab5e7] shadow-md transition-all group-hover:bg-[#5663e8]/10 group-hover:shadow-lg group-hover:shadow-[rgba(86,99,232,0.2)] dark:bg-slate-900">
                     {phase.step}
                   </div>
                   <div className="pt-2">
-                    <h3 className="text-xl font-bold mb-2 text-white">{phase.name}</h3>
-                    <p className="text-slate-400 text-sm leading-relaxed font-light">{phase.desc}</p>
+                    <h3 className="mb-2 text-xl font-bold text-slate-950 dark:text-white">{phase.name}</h3>
+                    <p className="text-sm font-light leading-relaxed text-slate-600 dark:text-slate-400">{phase.desc}</p>
                   </div>
                 </div>
               ))}
@@ -351,12 +348,12 @@ export default function Home() {
       </section>
 
       {/* --- SWARM 3D BANNER --- */}
-      <section className="py-32 px-6 border-t border-white/5 relative overflow-hidden bg-slate-950">
+      <section className="relative overflow-hidden border-t border-slate-200/70 bg-background px-6 py-32 dark:border-white/5 dark:bg-slate-950">
         <div className="absolute inset-0 w-full h-full">
-          <div className="absolute inset-0 bg-slate-950/80 z-10"></div>
-          <div className="absolute inset-y-0 left-0 w-3/4 bg-linear-to-r from-slate-950 via-slate-950/90 to-transparent z-20"></div>
+          <div className="absolute inset-0 z-10 bg-white/80 dark:bg-slate-950/80"></div>
+          <div className="absolute inset-y-0 left-0 z-20 w-3/4 bg-linear-to-r from-background via-background/90 to-transparent dark:from-slate-950 dark:via-slate-950/90"></div>
           <div className="absolute top-0 bottom-0 right-0 w-full md:w-2/3 opacity-50 mix-blend-screen bg-[url('/images/swarm-bg.png')] bg-cover bg-right bg-no-repeat z-0 mask-image:linear-gradient(to_left,black,transparent)]"></div>
-          <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-transparent to-slate-950 z-20"></div>
+          <div className="absolute inset-0 z-20 bg-linear-to-t from-background via-transparent to-background dark:from-slate-950 dark:to-slate-950"></div>
         </div>
         
         <div className="max-w-7xl mx-auto relative z-30 flex items-center min-h-100">
@@ -366,16 +363,16 @@ export default function Home() {
               native_sales_tools.exe
             </div>
             
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-white tracking-tight">
+            <h2 className="mb-6 text-4xl font-bold leading-tight tracking-tight text-slate-950 dark:text-white md:text-5xl lg:text-6xl">
               A 3D intelligence grid <br/>
               <span className="text-[#5ab5e7] drop-shadow-[0_0_15px_rgba(86,99,232,0.3)]">hunting for ROI.</span>
             </h2>
             
-            <p className="text-slate-300 text-lg md:text-xl font-light leading-relaxed mb-10 max-w-xl">
+            <p className="mb-10 max-w-xl text-lg font-light leading-relaxed text-slate-700 dark:text-slate-300 md:text-xl">
               Stratum Labs natively integrates the entire sales stack into the hive mind. Forget juggling subscriptions for data enrichment, email sequencing, and CRM. The swarm has its own built-in tools, allowing it to execute the entire sales loop autonomously at scale.
             </p>
 
-            <ul className="space-y-4 font-mono text-sm text-slate-400">
+            <ul className="space-y-4 font-mono text-sm text-slate-600 dark:text-slate-400">
               <li className="flex items-center"><span className="text-[#59abe7] mr-3">▸</span> Autonomous sequencing & outbound engines</li>
               <li className="flex items-center"><span className="text-[#59abe7] mr-3">▸</span> Built-in global B2B data lake connections</li>
               <li className="flex items-center"><span className="text-[#59abe7] mr-3">▸</span> Dynamic pricing & autonomous negotiation models</li>
@@ -385,31 +382,31 @@ export default function Home() {
       </section>
 
       {/* --- CTA SECTION --- */}
-      <section className="py-32 px-6 border-t border-white/5">
+      <section className="border-t border-slate-200/70 px-6 py-32 dark:border-white/5">
         <div className="max-w-5xl mx-auto">
-          <div className="border border-white/10 bg-slate-900/80 p-12 lg:p-20 relative overflow-hidden shadow-2xl rounded-[3rem]">
+          <div className="relative overflow-hidden rounded-[3rem] border border-[#59abe7]/20 bg-[linear-gradient(180deg,rgba(240,246,255,0.95),rgba(231,240,255,0.96))] p-10 shadow-2xl dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(12,24,54,0.94),rgba(8,17,37,0.84))] dark:shadow-[0_24px_80px_rgba(86,99,232,0.16)] lg:p-16">
             <div className="absolute top-0 right-0 w-150 h-150 bg-[#5663e8]/12 blur-[100px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/4"></div>
             
-            <div className="flex flex-col md:flex-row gap-12 justify-between items-center relative z-10">
+            <div className="relative z-10 flex flex-col gap-10 md:flex-row md:items-center md:justify-between">
               <div className="flex-1">
                 <div className="text-[#5ab5e7] font-mono text-xs font-semibold tracking-wider mb-6">
-                  // final directive
+                  {"// final directive"}
                 </div>
-                <h2 className="text-4xl md:text-5xl font-bold leading-tight mb-4 text-white">
+                <h2 className="mb-4 text-4xl font-bold leading-tight text-slate-950 dark:text-white md:text-5xl">
                   Stop hiring humans. <br/>
                   <span className="text-[#5ab5e7] drop-shadow-md">Deploy the swarm.</span>
                 </h2>
-                <p className="text-slate-400 text-lg font-light max-w-md">
+                <p className="max-w-md text-lg font-light text-slate-600 dark:text-slate-400">
                   Initialize a console, authorize your first agents, and let the hive ship revenue while you watch.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 shrink-0">
-                <Link href="/dashboard" className="inline-flex items-center justify-center px-8 py-4 bg-[#5663e8] text-white rounded-full font-bold hover:bg-[#6570ff] transition-colors shadow-lg shadow-[rgba(86,99,232,0.24)]">
+              <div className="flex w-full flex-col gap-3 sm:w-auto lg:flex-row lg:items-center lg:justify-end">
+                <Link href="/dashboard" className="inline-flex items-center justify-center rounded-full bg-[#5663e8] px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-[#6570ff] shadow-lg shadow-[rgba(86,99,232,0.24)] whitespace-nowrap">
                   &gt;_ Initialize Console <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
-                <Link href="#" className="inline-flex items-center justify-center px-8 py-4 rounded-full border border-white/10 text-slate-300 font-medium hover:bg-white/5 transition-colors">
-                  Book a sync
+                <Link href="/pricing" className="inline-flex items-center justify-center rounded-full border border-slate-200/80 px-6 py-3.5 text-sm font-medium text-slate-700 transition-colors hover:bg-white/70 whitespace-nowrap dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/5">
+                  View pricing
                 </Link>
               </div>
             </div>
@@ -418,19 +415,19 @@ export default function Home() {
       </section>
 
       {/* --- FOOTER --- */}
-      <footer className="border-t border-white/5 bg-slate-950 py-20 px-6">
+      <footer className="border-t border-slate-200/70 bg-background px-6 py-20 dark:border-white/5 dark:bg-slate-950">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
           <div className="md:col-span-1">
-            <Link href="/" className="inline-flex items-center mb-6 text-xl font-bold text-white tracking-tight">
-              <div className="w-5 h-5 rounded-full flex items-center justify-center mr-2 overflow-hidden border border-[#59abe7]/30 shrink-0">
+            <Link href="/" className="mb-6 inline-flex items-center text-xl font-bold tracking-tight text-slate-950 dark:text-white">
+              <div className="mr-2 flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200/80 bg-white/80 dark:border-[#59abe7]/30 dark:bg-white/3">
                 <Image src="/Stratum_Labs.png" alt="Stratum Labs" width={20} height={20} className="object-contain" />
               </div>
               Stratum <span className="text-[#5ab5e7]">Labs</span>
             </Link>
-            <p className="text-sm text-slate-400 leading-relaxed mb-6 font-light">
+            <p className="mb-6 text-sm font-light leading-relaxed text-slate-600 dark:text-slate-400">
               A hive of autonomous agents. Zero humans. Maximum ROI. Built for founders who would rather deploy capital than people.
             </p>
-            <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-white/10 text-[#5ab5e7] text-[10px] font-mono tracking-widest uppercase bg-slate-900">
+            <div className="inline-flex items-center rounded-full border border-[#59abe7]/25 bg-[#5663e8]/10 px-4 py-1.5 text-[10px] font-mono uppercase tracking-widest text-[#5ab5e7]">
               <span className="w-1.5 h-1.5 rounded-full bg-[#5ab5e7] animate-pulse mr-2"></span>
               swarm online
             </div>
@@ -438,17 +435,17 @@ export default function Home() {
           
           <div>
             <h4 className="font-mono text-slate-500 mb-6 uppercase tracking-widest text-[10px] font-bold">Product</h4>
-            <ul className="space-y-4 text-sm text-slate-400 font-light">
+            <ul className="space-y-4 text-sm font-light text-slate-600 dark:text-slate-400">
               <li><Link href="/dashboard" className="hover:text-[#59abe7] transition-colors">Console</Link></li>
               <li><Link href="/products" className="hover:text-[#59abe7] transition-colors">Agents</Link></li>
               <li><Link href="/products" className="hover:text-[#59abe7] transition-colors">Protocol</Link></li>
-              <li><Link href="/products" className="hover:text-[#59abe7] transition-colors">Pricing</Link></li>
+              <li><Link href="/pricing" className="hover:text-[#59abe7] transition-colors">Pricing</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-mono text-slate-500 mb-6 uppercase tracking-widest text-[10px] font-bold">Company</h4>
-            <ul className="space-y-4 text-sm text-slate-400 font-light">
+            <ul className="space-y-4 text-sm font-light text-slate-600 dark:text-slate-400">
               <li><Link href="/company" className="hover:text-[#59abe7] transition-colors">Manifesto</Link></li>
               <li><Link href="/company" className="hover:text-[#59abe7] transition-colors">Careers</Link></li>
               <li><Link href="/legal" className="hover:text-[#59abe7] transition-colors">Legal</Link></li>
@@ -457,7 +454,7 @@ export default function Home() {
           </div>
         </div>
         
-        <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] tracking-widest font-mono text-slate-500">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 border-t border-slate-200/70 pt-8 text-[10px] font-mono tracking-widest text-slate-500 dark:border-white/5 md:flex-row">
           <p>© 2026 Stratum Labs — the humanless company.</p>
           <p>status: <span className="text-[#5ab5e7]">all systems nominal</span></p>
         </div>

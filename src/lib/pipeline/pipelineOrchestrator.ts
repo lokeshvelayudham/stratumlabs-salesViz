@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
+import { syncLeadIntelligence } from "@/lib/lead-intelligence-server";
 import { revalidatePath } from "next/cache";
 import { scrapeWithPlaywright } from "../scrapers/playwrightScraper";
 import { extractLeadFromText, generateOutreachEmail } from "../ai/aiClient";
@@ -101,6 +102,8 @@ export async function runDiscoveryPipeline(customUrls?: string[], heading?: stri
           }
         });
         createdCount++;
+
+        await syncLeadIntelligence(l.id);
         
         await prisma.activityLog.create({
           data: {
@@ -162,15 +165,17 @@ export async function runDiscoveryPipeline(customUrls?: string[], heading?: stri
     revalidatePath("/dashboard");
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown pipeline error";
+
     await prisma.pipelineRun.update({
       where: { id: run.id },
       data: {
         status: "FAILED",
         finishedAt: new Date(),
-        errorText: error.message
+        errorText: errorMessage
       }
     });
-    return { success: false, error: error.message };
+    return { success: false, error: errorMessage };
   }
 }

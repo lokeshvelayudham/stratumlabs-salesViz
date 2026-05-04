@@ -5,13 +5,18 @@ import bcrypt from "bcryptjs";
 import { createSession, logout } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 import { signIn, signOut } from "@/auth";
+import { ensureUserProvisionedById, isSuperAdminEmail } from "@/lib/auth/provisioning";
+
+type AuthFormState = {
+  error?: string;
+} | null;
 
 export async function signoutAction() {
   await logout();
   await signOut({ redirectTo: "/login" });
 }
 
-export async function login(prevState: any, formData: FormData) {
+export async function login(_prevState: AuthFormState, formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
@@ -33,11 +38,12 @@ export async function login(prevState: any, formData: FormData) {
     return { error: "Invalid email or password" };
   }
 
+  await ensureUserProvisionedById(user.id);
   await createSession(user.id);
   redirect("/dashboard");
 }
 
-export async function signup(prevState: any, formData: FormData) {
+export async function signup(_prevState: AuthFormState, formData: FormData) {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -61,13 +67,39 @@ export async function signup(prevState: any, formData: FormData) {
       name,
       email,
       passwordHash,
+      role: isSuperAdminEmail(email) ? "SUPER_ADMIN" : "USER",
     },
   });
 
+  await ensureUserProvisionedById(user.id);
   await createSession(user.id);
-  redirect("/dashboard");
+  redirect("/organization?onboarding=1");
 }
 
-export async function providerSignIn(provider: string) {
-  await signIn(provider, { redirectTo: "/dashboard" });
+async function providerSignIn(provider: string, redirectTo: string) {
+  await signIn(provider, { redirectTo });
+}
+
+export async function signInWithGoogle() {
+  await providerSignIn("google", "/dashboard");
+}
+
+export async function signInWithGitHub() {
+  await providerSignIn("github", "/dashboard");
+}
+
+export async function signInWithMicrosoft() {
+  await providerSignIn("microsoft-entra-id", "/dashboard");
+}
+
+export async function signUpWithGoogle() {
+  await providerSignIn("google", "/organization?onboarding=1");
+}
+
+export async function signUpWithGitHub() {
+  await providerSignIn("github", "/organization?onboarding=1");
+}
+
+export async function signUpWithMicrosoft() {
+  await providerSignIn("microsoft-entra-id", "/organization?onboarding=1");
 }

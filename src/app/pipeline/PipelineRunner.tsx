@@ -77,13 +77,13 @@ export function PipelineRunner() {
   };
 
   return (
-    <div className="w-full max-w-3xl bg-slate-900/40 backdrop-blur-sm border border-white/5 shadow-2xl rounded-xl overflow-hidden mb-6 relative group">
+    <div className="group relative mb-6 w-full max-w-3xl overflow-hidden rounded-xl border border-slate-200/70 bg-white/78 shadow-2xl backdrop-blur-sm dark:border-white/5 dark:bg-slate-900/40">
       <div className="absolute top-0 left-0 w-px h-full bg-[#59abe7]/60 shadow-[0_0_15px_rgba(90,181,231,0.65)] opacity-0 group-hover:opacity-100 transition-opacity"></div>
-      <div className="p-5 border-b border-white/5 bg-slate-950/80">
+      <div className="border-b border-slate-200/70 bg-slate-50/80 p-5 dark:border-white/5 dark:bg-slate-950/80">
         <h3 className="text-lg font-mono tracking-widest uppercase font-bold text-[#5ab5e7] flex items-center mb-1">
           <Sparkles className="w-4 h-4 mr-2" /> Target_Acquisition
         </h3>
-        <p className="text-xs text-slate-400 mb-4 font-mono">Describe parameters. AI will autonomously hunt targets and build the scraping queue.</p>
+        <p className="mb-4 text-xs font-mono text-slate-600 dark:text-slate-400">Describe parameters. AI will autonomously hunt targets and build the scraping queue.</p>
         
         {/* Chatbot Discovery Input */}
         <div className="flex flex-col sm:flex-row gap-2 mb-4">
@@ -92,14 +92,14 @@ export function PipelineRunner() {
             value={aiPrompt}
             onChange={(e) => setAiPrompt(e.target.value)}
             disabled={isDiscovering || isRunning}
-            className="flex-1 bg-slate-950/50 border-white/10 text-slate-200 focus-visible:ring-[#59abe7]/30 focus-visible:border-[#59abe7]/30 font-mono text-xs placeholder:text-slate-600"
+            className="flex-1 border-slate-200 bg-white text-slate-900 font-mono text-xs placeholder:text-slate-400 focus-visible:border-[#59abe7]/30 focus-visible:ring-[#59abe7]/30 dark:border-white/10 dark:bg-slate-950/50 dark:text-slate-200 dark:placeholder:text-slate-600"
             onKeyDown={(e) => e.key === 'Enter' && handleAiDiscovery()}
           />
           <Button 
             onClick={handleAiDiscovery} 
             disabled={isDiscovering || isRunning || !aiPrompt.trim()}
             variant="outline"
-            className="border-[#59abe7]/25 text-[#5ab5e7] bg-[#5663e8]/10 hover:bg-[#5663e8]/14 min-w-35 font-mono text-xs uppercase tracking-wider"
+            className="min-w-35 border-[#59abe7]/25 bg-[#5663e8]/10 font-mono text-xs uppercase tracking-wider text-[#5663e8] hover:bg-[#5663e8]/14 dark:text-[#5ab5e7]"
           >
             {isDiscovering ? <span className="animate-pulse">Searching...</span> : "Auto-Discover"}
           </Button>
@@ -113,10 +113,10 @@ export function PipelineRunner() {
               value={manualUrl}
               onChange={(e) => setManualUrl(e.target.value)}
               disabled={isRunning}
-              className="text-xs bg-slate-950/50 border-white/10 text-slate-200 focus-visible:ring-[#59abe7]/30 focus-visible:border-[#59abe7]/30 font-mono placeholder:text-slate-600"
+              className="border-slate-200 bg-white text-slate-900 font-mono text-xs placeholder:text-slate-400 focus-visible:border-[#59abe7]/30 focus-visible:ring-[#59abe7]/30 dark:border-white/10 dark:bg-slate-950/50 dark:text-slate-200 dark:placeholder:text-slate-600"
               onKeyDown={(e) => e.key === 'Enter' && addManualUrl()}
             />
-            <Button onClick={addManualUrl} disabled={!manualUrl.trim() || isRunning} variant="secondary" size="icon" className="bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-white/5">
+            <Button onClick={addManualUrl} disabled={!manualUrl.trim() || isRunning} variant="secondary" size="icon" className="border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-950 dark:border-white/5 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white">
               <Plus className="w-4 h-4" />
             </Button>
           </div>
@@ -124,19 +124,19 @@ export function PipelineRunner() {
       </div>
 
       {/* Visual URL Queue */}
-      <div className="p-5 bg-slate-900/30">
+      <div className="bg-white/72 p-5 dark:bg-slate-900/30">
         <div className="flex justify-between items-end mb-3">
           <span className="text-xs font-mono tracking-widest uppercase text-slate-500">Scraping_Queue <span className="text-[#5ab5e7]">[{urls.length}]</span></span>
         </div>
         
-        <div className="min-h-30 max-h-62.5 overflow-y-auto w-full bg-slate-950/80 rounded-md border border-white/5 p-2 space-y-2">
+        <div className="min-h-30 max-h-62.5 w-full space-y-2 overflow-y-auto rounded-md border border-slate-200/70 bg-slate-50/80 p-2 dark:border-white/5 dark:bg-slate-950/80">
           {urls.length === 0 ? (
             <div className="flex h-full items-center justify-center font-mono text-xs text-slate-600 py-10 uppercase tracking-widest opacity-50">
               Queue Empty. Awaiting Directives.
             </div>
           ) : (
             urls.map((url, idx) => (
-              <div key={idx} className="flex items-center justify-between bg-slate-900/50 px-3 py-2 border border-white/5 rounded text-sm group/item hover:border-[#59abe7]/25 transition-colors">
+              <div key={idx} className="group/item flex items-center justify-between rounded border border-slate-200/70 bg-white/80 px-3 py-2 text-sm transition-colors hover:border-[#59abe7]/25 dark:border-white/5 dark:bg-slate-900/50">
                 <span className="line-clamp-1 truncate mr-4 text-[#59abe7]/80 group-hover/item:text-[#8dcff1] font-mono text-xs transition-colors">{url}</span>
                 <button 
                   onClick={() => removeUrl(url)} 
@@ -153,13 +153,13 @@ export function PipelineRunner() {
         {/* Action Bar */}
         <div className="mt-5 flex flex-col sm:flex-row gap-4 items-end justify-between">
           <div className="w-full sm:w-1/2">
-            <label className="text-[10px] font-mono tracking-widest uppercase text-slate-500 block mb-1">Campaign Segment <span className="text-rose-500">*</span></label>
+            <label className="mb-1 block text-[10px] font-mono uppercase tracking-widest text-slate-500">Campaign Segment <span className="text-rose-500">*</span></label>
             <Input 
               placeholder="e.g. Immunology Conference Q3..."
               value={heading}
               onChange={(e) => setHeading(e.target.value)}
               disabled={isRunning}
-              className="bg-slate-950/50 border-white/10 text-slate-200 focus-visible:ring-[#59abe7]/30 focus-visible:border-[#59abe7]/30 font-mono text-xs placeholder:text-slate-600"
+              className="border-slate-200 bg-white text-slate-900 font-mono text-xs placeholder:text-slate-400 focus-visible:border-[#59abe7]/30 focus-visible:ring-[#59abe7]/30 dark:border-white/10 dark:bg-slate-950/50 dark:text-slate-200 dark:placeholder:text-slate-600"
             />
           </div>
           <Button 

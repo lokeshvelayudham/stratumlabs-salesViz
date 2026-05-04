@@ -17,10 +17,38 @@ model User {
   emailVerified DateTime?
   image         String?
   passwordHash  String?
+  role          String    @default("USER") // USER, SUPER_ADMIN
+  planName      String    @default("Launch")
+  monthlySpend  Int       @default(990)
+  activeSwarms  Int       @default(2)
+  processAccess Boolean   @default(true)
+  organizationRole String @default("OWNER") // OWNER, ADMIN, MEMBER, VIEWER
+  organizationId String?
   accounts      Account[]
   sessions      Session[]
+  organization  Organization? @relation("OrganizationMembers", fields: [organizationId], references: [id], onDelete: SetNull)
+  createdOrganizations Organization[] @relation("OrganizationCreators")
+  ownedAgents   SwarmAgent[] @relation("AgentOwner")
+  createdFeedback FeedbackEntry[] @relation("FeedbackCreator")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+model Organization {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  vision      String?
+  mission     String?
+  brandColor  String   @default("#5663e8")
+  logoUrl     String?
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy User?  @relation("OrganizationCreators", fields: [createdById], references: [id], onDelete: SetNull)
+  members   User[] @relation("OrganizationMembers")
+  agents    SwarmAgent[] @relation("OrganizationAgents")
 }
 
 model Account {
@@ -77,18 +105,29 @@ model Lead {
   status       String     @default("NEW") // NEW, REVIEW, APPROVED, REJECTED, CONTACTED, REPLIED, INTERESTED, CLOSED
   tier         String     @default("UNRANKED") // TIER1, TIER2, TIER3, UNRANKED
   fitScore     Int?
+  intentScore  Int        @default(0)
+  icpScore     Int        @default(0)
+  priorityScore Int       @default(0)
+  scoreUpdatedAt DateTime?
   researchArea String?
   notes        String?
   whyRelevant  String?
   aiSummary    String?
   rawSourceText String?
+  conversationSummary String?
+  assignedAgentId String?
 
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
+  assignedAgent    SwarmAgent? @relation(fields: [assignedAgentId], references: [id], onDelete: SetNull)
   tags             LeadTag[]
   scoreBreakdowns  LeadScoreBreakdown[]
+  signals          LeadSignal[]
   outreachDrafts   OutreachDraft[]
+  inboxThreads     InboxThread[]
+  attributions     RevenueAttribution[]
+  feedbackEntries  FeedbackEntry[]
   activities       ActivityLog[]
 }
 
@@ -123,6 +162,169 @@ model OutreachDraft {
   updatedAt DateTime    @updatedAt
 
   lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  feedbackEntries FeedbackEntry[]
+}
+
+model SwarmAgent {
+  id                 String    @id @default(uuid())
+  name               String
+  goal               String
+  budget             Int       @default(0)
+  spend              Int       @default(0)
+  revenue            Int       @default(0)
+  strategy           String
+  state              String    @default("DEPLOY") // DEPLOY, HUNT, CLOSE, KILL, PAUSED
+  memorySummary      String?
+  lastImprovementNote String?
+  ownerId            String?
+  organizationId     String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  owner         User? @relation("AgentOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  organization  Organization? @relation("OrganizationAgents", fields: [organizationId], references: [id], onDelete: SetNull)
+  leads         Lead[]
+  memoryEntries AgentMemoryEntry[]
+  inboxThreads  InboxThread[]
+  attributions  RevenueAttribution[]
+  feedbackEntries FeedbackEntry[]
+}
+
+model AgentMemoryEntry {
+  id          String   @id @default(uuid())
+  agentId     String
+  memoryType  String   // SUCCESS, FAILURE, PLAYBOOK, OBJECTION, CONTEXT
+  title       String
+  content     String
+  campaignKey String?
+  impactScore Int      @default(50)
+  createdAt   DateTime @default(now())
+
+  agent SwarmAgent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+}
+
+model LeadSignal {
+  id         String   @id @default(uuid())
+  leadId      String
+  signalType  String   // FIT, INTENT, ICP, TIMING, REPLY
+  label       String
+  source      String?
+  score       Int
+  metadata    String?
+  createdAt   DateTime @default(now())
+
+  lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+}
+
+model InboxThread {
+  id             String   @id @default(uuid())
+  leadId         String
+  agentId        String?
+  channel        String   @default("EMAIL")
+  subject        String?
+  status         String   @default("OPEN") // OPEN, NEEDS_REVIEW, RESPONDED, CLOSED
+  classification String   @default("UNCLASSIFIED") // INTERESTED, OBJECTION, SPAM, NOT_NOW
+  summary        String?
+  lastMessageAt  DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  lead     Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  agent    SwarmAgent?   @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  messages InboxMessage[]
+}
+
+model InboxMessage {
+  id               String   @id @default(uuid())
+  threadId         String
+  direction        String   // INBOUND, OUTBOUND
+  senderName       String?
+  senderEmail      String?
+  body             String
+  aiSuggestedReply String?
+  status           String   @default("RECEIVED") // RECEIVED, DRAFTED, SENT
+  createdAt        DateTime @default(now())
+
+  thread InboxThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+}
+
+model RevenueAttribution {
+  id             String   @id @default(uuid())
+  leadId         String
+  agentId        String?
+  amount         Int
+  currency       String   @default("USD")
+  campaignName   String?
+  strategyLabel  String?
+  touchpointCount Int     @default(1)
+  note           String?
+  closedAt       DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  lead  Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  agent SwarmAgent? @relation(fields: [agentId], references: [id], onDelete: SetNull)
+}
+
+model FeedbackEntry {
+  id           String   @id @default(uuid())
+  leadId       String?
+  agentId      String?
+  draftId      String?
+  createdById  String?
+  feedbackType String   // APPROVED, REJECTED, EDITED, TRAINING, OVERRIDE
+  sentiment    String   @default("NEUTRAL")
+  score        Int?
+  note         String
+  createdAt    DateTime @default(now())
+
+  lead      Lead?        @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  agent     SwarmAgent?  @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  draft     OutreachDraft? @relation(fields: [draftId], references: [id], onDelete: SetNull)
+  createdBy User?        @relation("FeedbackCreator", fields: [createdById], references: [id], onDelete: SetNull)
+}
+
+model RelationGraphNode {
+  id                String   @id @default(uuid())
+  entityType        String
+  entityId          String
+  label             String
+  summary           String?
+  semanticText      String?
+  keywordFingerprint String?
+  metadata          String?
+  healthScore       Int?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  outgoingEdges RelationGraphEdge[] @relation("RelationGraphEdgeSource")
+  incomingEdges RelationGraphEdge[] @relation("RelationGraphEdgeTarget")
+
+  @@unique([entityType, entityId])
+  @@index([entityType, entityId])
+  @@index([entityType, updatedAt])
+}
+
+model RelationGraphEdge {
+  id           String   @id @default(uuid())
+  sourceNodeId String
+  targetNodeId String
+  relationType String
+  rationale    String
+  strength     Int      @default(50)
+  confidence   Int      @default(50)
+  semanticScore Int?
+  discoveredBy String   @default("HEURISTIC")
+  metadata     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sourceNode RelationGraphNode @relation("RelationGraphEdgeSource", fields: [sourceNodeId], references: [id], onDelete: Cascade)
+  targetNode RelationGraphNode @relation("RelationGraphEdgeTarget", fields: [targetNodeId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceNodeId, targetNodeId, relationType])
+  @@index([sourceNodeId, relationType])
+  @@index([targetNodeId, relationType])
+  @@index([relationType, strength])
 }
 
 model PipelineRun {

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 
 // Define routes that do not require authentication
-const publicRoutes = ["/", "/login", "/signup", "/company", "/products", "/legal"];
+const publicRoutes = ["/", "/login", "/signup", "/company", "/products", "/pricing", "/legal"];
 
 export const proxy = auth((req) => {
   const { pathname } = req.nextUrl;

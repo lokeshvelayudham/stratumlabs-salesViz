@@ -1,19 +1,16 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
-import { format } from "date-fns";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, MoreHorizontal, Terminal } from "lucide-react";
+import { MoreHorizontal, Terminal } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { createOutreachDraft, setLeadStatus } from "./actions";
 
 import { LeadsFilterControls } from "./LeadsFilterControls";
 
@@ -29,7 +26,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
   const eventName = typeof params.eventName === "string" && params.eventName !== "all" ? params.eventName : undefined;
 
   // Build where clause
-  const where: any = {};
+  const where: Prisma.LeadWhereInput = {};
   if (status) {
     where.status = status;
   }
@@ -46,7 +43,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
   }
 
   // Build orderBy
-  let orderBy: any = {};
+  let orderBy: Prisma.LeadOrderByWithRelationInput = {};
   switch (sort) {
     case "fitScore_desc":
       orderBy = { fitScore: 'desc' };
@@ -101,30 +98,30 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6">
+      <div className="flex flex-col gap-4 border-b border-slate-200/70 pb-6 sm:flex-row sm:items-center sm:justify-between dark:border-white/5">
         <div>
-          <div className="inline-flex items-center px-3 py-1 rounded-full border border-[#59abe7]/25 bg-[#5663e8]/10 font-mono text-[10px] text-[#5ab5e7] tracking-widest mb-3 shadow-[0_0_18px_rgba(86,99,232,0.12)]">
+          <div className="mb-3 inline-flex items-center rounded-full border border-[#59abe7]/25 bg-[#5663e8]/10 px-3 py-1 font-mono text-[10px] tracking-widest text-[#5663e8] shadow-[0_0_18px_rgba(86,99,232,0.08)] dark:text-[#5ab5e7] dark:shadow-[0_0_18px_rgba(86,99,232,0.12)]">
             <Terminal className="w-3 h-3 mr-2" />
-            // prospect_databank
+            {"// prospect_databank"}
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-white font-sans">Leads DB</h1>
-          <p className="text-slate-400 mt-1 font-light">Manage and review your AI-discovered prospects.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950 font-sans dark:text-white">Leads DB</h1>
+          <p className="mt-1 font-light text-slate-600 dark:text-slate-400">Manage and review your AI-discovered prospects.</p>
         </div>
         <div className="flex gap-3">
-          <Button className="bg-slate-900 border border-white/10 hover:bg-slate-800 text-slate-300 font-mono text-xs tracking-widest uppercase">Export</Button>
-          <Button className="bg-[#5663e8] hover:bg-[#6570ff] text-white font-bold shadow-[0_0_15px_rgba(86,99,232,0.22)]">Execute Outreach</Button>
+          <Link href="/manual-intake" className={buttonVariants({ variant: "outline", className: "border-slate-200 bg-white text-slate-700 font-mono text-xs uppercase tracking-widest hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800" })}>Add Lead</Link>
+          <Link href="/outreach" className={buttonVariants({ variant: "default", className: "bg-[#5663e8] hover:bg-[#6570ff] text-white font-bold shadow-[0_0_15px_rgba(86,99,232,0.22)]" })}>Review Outreach</Link>
         </div>
       </div>
 
-      <div className="bg-slate-900/40 backdrop-blur-sm rounded-xl border border-white/5 shadow-2xl overflow-hidden relative">
+      <div className="relative overflow-hidden rounded-xl border border-slate-200/70 bg-white/78 shadow-2xl backdrop-blur-sm dark:border-white/5 dark:bg-slate-900/40">
         <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-[#5663e8]/0 via-[#59abe7]/30 to-[#5663e8]/0"></div>
         
         <LeadsFilterControls totalLeads={leads.length} campaigns={campaigns} />
 
         <div className="overflow-x-auto">
           <Table>
-            <TableHeader className="bg-slate-950/80 border-b border-white/5">
-              <TableRow className="hover:bg-transparent border-white/5">
+            <TableHeader className="border-b border-slate-200/70 bg-slate-50/80 dark:border-white/5 dark:bg-slate-950/80">
+              <TableRow className="border-slate-200/70 hover:bg-transparent dark:border-white/5">
                 <TableHead className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Prospect</TableHead>
                 <TableHead className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Research Area</TableHead>
                 <TableHead className="font-mono text-[10px] uppercase tracking-widest text-slate-500">Source</TableHead>
@@ -136,7 +133,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
             </TableHeader>
             <TableBody>
               {leads.length === 0 ? (
-                <TableRow className="hover:bg-transparent border-white/5">
+                <TableRow className="border-slate-200/70 hover:bg-transparent dark:border-white/5">
                   <TableCell colSpan={7} className="text-center py-16 text-slate-500">
                     <Terminal className="w-8 h-8 mx-auto mb-3 opacity-20" />
                     <p className="font-mono text-xs tracking-widest uppercase">No records found</p>
@@ -145,21 +142,21 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
                 </TableRow>
               ) : (
                 leads.map((lead) => (
-                  <TableRow key={lead.id} className="hover:bg-slate-800/30 transition-colors border-white/5 group">
+                  <TableRow key={lead.id} className="group border-slate-200/70 transition-colors hover:bg-slate-100/60 dark:border-white/5 dark:hover:bg-slate-800/30">
                     <TableCell>
                       <Link href={`/leads/${lead.id}`} className="block">
-                        <div className="font-semibold text-slate-200 group-hover:text-[#5ab5e7] transition-colors truncate max-w-50">{lead.fullName}</div>
-                        <div className="text-sm text-slate-500 truncate max-w-50">{lead.institution}</div>
+                        <div className="max-w-50 truncate font-semibold text-slate-800 transition-colors group-hover:text-[#5663e8] dark:text-slate-200 dark:group-hover:text-[#5ab5e7]">{lead.fullName}</div>
+                        <div className="max-w-50 truncate text-sm text-slate-500">{lead.institution}</div>
                         {lead.role && <div className="text-[10px] font-mono text-slate-600 truncate max-w-50 mt-1 tracking-wider uppercase">{lead.role}</div>}
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <div className="text-sm text-slate-400 line-clamp-2 max-w-62.5 font-light">
+                      <div className="line-clamp-2 max-w-62.5 text-sm font-light text-slate-600 dark:text-slate-400">
                         {lead.researchArea || "Unknown"}
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-[10px] text-slate-400 font-mono tracking-wider bg-slate-950/50 border-white/10 uppercase">
+                      <Badge variant="outline" className="border-slate-200 bg-white text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:border-white/10 dark:bg-slate-950/50 dark:text-slate-400">
                         {lead.sourceName}
                       </Badge>
                       {lead.eventName && (
@@ -174,7 +171,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
                           {lead.fitScore}
                         </div>
                       ) : (
-                        <span className="text-slate-600 font-mono">-</span>
+                        <span className="font-mono text-slate-600">-</span>
                       )}
                     </TableCell>
                     <TableCell className="text-center">
@@ -189,19 +186,23 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
-                        <DropdownMenuTrigger className={buttonVariants({ variant: "ghost", className: "h-8 w-8 p-0 text-slate-500 hover:text-[#5ab5e7] hover:bg-[#5663e8]/10" })}>
+                        <DropdownMenuTrigger className={buttonVariants({ variant: "ghost", className: "h-8 w-8 p-0 text-slate-500 hover:bg-[#5663e8]/10 hover:text-[#5663e8] dark:hover:text-[#5ab5e7]" })}>
                           <span className="sr-only">Open menu</span>
                           <MoreHorizontal className="h-4 w-4" />
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-slate-900 border-white/10 text-slate-300">
+                        <DropdownMenuContent align="end" className="border-slate-200 bg-white p-1.5 text-slate-700 dark:border-white/10 dark:bg-slate-900 dark:text-slate-300">
                           <div className="px-2 py-1.5 text-[10px] font-mono tracking-widest uppercase text-slate-500">Actions</div>
-                          <DropdownMenuItem className="focus:bg-slate-800 focus:text-slate-200 cursor-pointer">
-                            <Link href={`/leads/${lead.id}`} className="w-full relative z-10">View Details</Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="focus:bg-slate-800 focus:text-slate-200 cursor-pointer">Generate Outreach</DropdownMenuItem>
-                          <DropdownMenuSeparator className="bg-white/5" />
-                          <DropdownMenuItem className="focus:bg-[#5663e8]/10 focus:text-[#5ab5e7] text-[#5ab5e7] cursor-pointer font-bold">Approve Lead</DropdownMenuItem>
-                          <DropdownMenuItem className="focus:bg-rose-500/10 focus:text-rose-400 text-rose-500 cursor-pointer font-bold">Reject Lead</DropdownMenuItem>
+                          <Link href={`/leads/${lead.id}`} className="flex w-full items-center rounded-md px-2 py-2 text-sm transition-colors hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-200">View Details</Link>
+                          <form action={createOutreachDraft.bind(null, lead.id, "/leads")}>
+                            <button type="submit" className="flex w-full items-center rounded-md px-2 py-2 text-sm text-left transition-colors hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-200">Generate Outreach</button>
+                          </form>
+                          <div className="my-1 h-px bg-slate-200/70 dark:bg-white/10"></div>
+                          <form action={setLeadStatus.bind(null, lead.id, "APPROVED", "/leads")}>
+                            <button type="submit" className="flex w-full items-center rounded-md px-2 py-2 text-sm text-left font-semibold text-[#5663e8] transition-colors hover:bg-[#5663e8]/10 dark:text-[#5ab5e7]">Approve Lead</button>
+                          </form>
+                          <form action={setLeadStatus.bind(null, lead.id, "REJECTED", "/leads")}>
+                            <button type="submit" className="flex w-full items-center rounded-md px-2 py-2 text-sm text-left font-semibold text-rose-500 transition-colors hover:bg-rose-500/10 dark:text-rose-400">Reject Lead</button>
+                          </form>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

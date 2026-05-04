@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/db";
+import { syncLeadIntelligence } from "@/lib/lead-intelligence-server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
@@ -37,6 +38,8 @@ export async function createManualLead(formData: FormData) {
       message: `Lead manually added from ${eventName || "unknown event"}`
     }
   });
+
+  await syncLeadIntelligence(lead.id);
 
   revalidatePath("/leads");
   revalidatePath("/dashboard");
